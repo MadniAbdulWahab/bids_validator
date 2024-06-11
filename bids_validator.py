@@ -104,9 +104,12 @@ class BIDSValidator:
         else:
             logger.info("Validation successful. All required files and directories are present.")
 
-# Example usage
-script_dir = os.path.dirname(__file__)
-root_folder_name = 'FER01_BIDS'
-root_path = os.path.join(script_dir, root_folder_name)
-validator = BIDSValidator(root_path)
-validator.validate_file_structure()
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        print("Usage: python bids_validator.py /path/to/bids/dataset")
+        sys.exit(1)
+    
+    root_path = sys.argv[1]
+    validator = BIDSValidator(root_path)
+    validator.validate_file_structure()
