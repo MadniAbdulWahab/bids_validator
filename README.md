@@ -21,7 +21,7 @@ This tool checks the organization and naming conventions of files in a BIDS data
     ```
 2. Navigate to the project directory:
     ```sh
-    cd bids-validator
+    cd bids_validator
     ```
 3. Install required dependencies (if any):
     ```sh
