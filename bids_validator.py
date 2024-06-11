@@ -107,7 +107,7 @@ class BIDSValidator:
 if __name__ == "__main__":
     import sys
     if len(sys.argv) != 2:
-        print("Usage: python bids_validator.py /path/to/bids/dataset")
+        print('Usage: python bids_validator.py "/path/to/bids/dataset"')
         sys.exit(1)
     
     root_path = sys.argv[1]
