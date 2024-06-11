@@ -17,7 +17,7 @@ This tool checks the organization and naming conventions of files in a BIDS data
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/MadniAbdulWahab/bids-validator.git
+    git clone https://github.com/MadniAbdulWahab/bids_validator.git
     ```
 2. Navigate to the project directory:
     ```sh
