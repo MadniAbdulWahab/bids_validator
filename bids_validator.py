@@ -3,6 +3,7 @@ import re
 import logging
 import json
 import sys
+from jsonschema import validate, ValidationError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -11,13 +12,16 @@ class BIDSValidator:
     def __init__(self, root_path):
         self.root_path = root_path
         self.missing_files = []
+        self.unexpected_files = []
+        self.invalid_json_files = []
         self.required_root_files = {
             "dataset_description.json": False,
-            "citation.cff": True,
-            "changes": True,
-            "license": True,
+            "CITATION.cff": True,
+            "CHANGES": True,
+            "LICENSE": True,
             "participants.tsv": False,
-            "participants.json": False
+            "participants.json": False,
+            "README": False
         }
         self.sub_dir_prefix = "sub-"
         self.ses_dir_prefix = "ses-"
@@ -34,18 +38,24 @@ class BIDSValidator:
             logger.info("Schema loaded successfully")
         except FileNotFoundError:
             logger.warning("Schema file not found. Proceeding without schema")
+            self.schema = None
 
     def validate_file_structure(self):
         logger.info("Starting validation")
         self.validate_root_files()
         self.validate_directories()
+        self.validate_json_files()
         return self.report_results()
 
     def validate_root_files(self):
         root_files = {f.lower(): f for f in os.listdir(self.root_path) if os.path.isfile(os.path.join(self.root_path, f))}
         for file, optional in self.required_root_files.items():
-            if file not in root_files and not optional:
+            if file.lower() not in root_files and not optional:
                 self.missing_files.append(file)
+        
+        for file in root_files.values():
+            if file.lower() not in [key.lower() for key in self.required_root_files.keys()]:
+                self.unexpected_files.append(file)
 
     def validate_directories(self):
         sub_dirs = []
@@ -55,9 +65,7 @@ class BIDSValidator:
                 if d.lower().startswith(self.sub_dir_prefix):
                     sub_dirs.append(d)
                 else:
-                    self.missing_files.append(f"Non-sub directory '{d}' found in the root directory")
-            elif d.lower() not in self.required_root_files:
-                self.missing_files.append(f"Unexpected file '{d}' found in the root directory")
+                    self.unexpected_files.append(f"Non-sub directory '{d}' found in the root directory")
 
         if not sub_dirs:
             self.missing_files.append(f"No directories starting with '{self.sub_dir_prefix}' found")
@@ -70,9 +78,7 @@ class BIDSValidator:
         for item in os.listdir(sub_dir_path):
             item_path = os.path.join(sub_dir_path, item)
             if os.path.isdir(item_path) and not item.lower().startswith(self.ses_dir_prefix):
-                self.missing_files.append(f"Non-session directory '{item}' found in '{sub_dir}'")
-            elif os.path.isfile(item_path):
-                self.missing_files.append(f"File '{item}' found in '{sub_dir}'")
+                self.unexpected_files.append(f"Non-session directory '{item}' found in '{sub_dir}'")
 
         ses_dirs = [d for d in os.listdir(sub_dir_path) if os.path.isdir(os.path.join(sub_dir_path, d)) and d.lower().startswith(self.ses_dir_prefix)]
         if not ses_dirs:
@@ -95,13 +101,38 @@ class BIDSValidator:
                 for file in os.listdir(session_subdir_path):
                     if os.path.isfile(os.path.join(session_subdir_path, file)):
                         if not pattern.match(file):
-                            self.missing_files.append(f"File '{file}' in '{session_subdir_path}' does not start with 'sub-{sub_label}[_ses-{ses_label}]'")
+                            self.unexpected_files.append(f"File '{file}' in '{session_subdir_path}' does not start with 'sub-{sub_label}[_ses-{ses_label}]'")
+
+    def validate_json_files(self):
+        if not self.schema:
+            return
+        for json_file in ['dataset_description.json']:
+            json_path = os.path.join(self.root_path, json_file)
+            if os.path.exists(json_path):
+                with open(json_path, 'r') as f:
+                    try:
+                        data = json.load(f)
+                        validate(instance=data, schema=self.schema[json_file])
+                        logger.info(f"{json_file} is valid according to the schema")
+                    except ValidationError as e:
+                        self.invalid_json_files.append(f"{json_file}: {str(e)}")
+                    except json.JSONDecodeError:
+                        self.invalid_json_files.append(f"{json_file}: invalid JSON")
 
     def report_results(self):
-        if self.missing_files:
-            logger.warning("Validation failed. Missing files/directories:")
-            for item in self.missing_files:
-                logger.warning(f"- {item}")
+        if self.missing_files or self.unexpected_files or self.invalid_json_files:
+            if self.missing_files:
+                logger.warning("Validation failed. Missing files/directories:")
+                for item in self.missing_files:
+                    logger.warning(f"- {item}")
+            if self.unexpected_files:
+                logger.warning("Unexpected files/directories found:")
+                for item in self.unexpected_files:
+                    logger.warning(f"- {item}")
+            if self.invalid_json_files:
+                logger.warning("Invalid JSON files:")
+                for item in self.invalid_json_files:
+                    logger.warning(f"- {item}")
             return False
         else:
             logger.info("Validation successful. All required files and directories are present.")

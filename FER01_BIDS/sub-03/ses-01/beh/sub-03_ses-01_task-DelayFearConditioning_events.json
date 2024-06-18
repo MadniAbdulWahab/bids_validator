@@ -1,0 +1,34 @@
+{
+  "onset": {
+    "LongName": "Onset",
+    "Description": "Stimulus onset",
+    "Units": "second"
+  },
+  "duration": {
+    "LongName": "Duration",
+    "Description": "Stimulus duration",
+    "Units": "second"
+  },
+  "trial_type": {
+    "LongName": "Trial Type",
+    "Description": "Trial type as defined in abstract terms",
+    "Levels": {
+      "CS+": "Conditioned stimulus coupled with US",
+      "CS-": "Conditioned stimulus never coupled with US",
+      "US": "Unconditioned stimulus",
+      "block_start": "Start of trial block",
+      "block_end": "End of trial block"
+    }
+  },
+  "identifier": {
+    "LongName": "Identifier",
+    "Description": "Stimulus identifier",
+    "Levels": {
+      "diamond": "A diamond with \u2026 degrees visual angle",
+      "square": "A square with \u2026 degrees visual angle",
+      "shock": "An electric shock",
+      "block_start": "Start of trial block",
+      "block_end": "End of trial block"
+    }
+  }
+}
