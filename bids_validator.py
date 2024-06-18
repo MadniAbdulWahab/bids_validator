@@ -2,6 +2,7 @@ import os
 import re
 import logging
 import json
+import sys
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class BIDSValidator:
         logger.info("Starting validation")
         self.validate_root_files()
         self.validate_directories()
-        self.report_results()
+        return self.report_results()
 
     def validate_root_files(self):
         root_files = {f.lower(): f for f in os.listdir(self.root_path) if os.path.isfile(os.path.join(self.root_path, f))}
@@ -101,15 +102,21 @@ class BIDSValidator:
             logger.warning("Validation failed. Missing files/directories:")
             for item in self.missing_files:
                 logger.warning(f"- {item}")
+            return False
         else:
             logger.info("Validation successful. All required files and directories are present.")
+            return True
 
 if __name__ == "__main__":
-    import sys
     if len(sys.argv) != 2:
-        print("Usage: python bids_validator.py /path/to/bids/dataset")
+        print('Usage: python bids_validator.py "/path/to/bids/dataset"')
         sys.exit(1)
     
     root_path = sys.argv[1]
     validator = BIDSValidator(root_path)
-    validator.validate_file_structure()
+    result = validator.validate_file_structure()
+    
+    if result:
+        print(f"OUTPUT: true", flush=True)
+    else:
+        print(f"OUTPUT: false", flush=True)
