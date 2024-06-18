@@ -23,14 +23,10 @@ This tool checks the organization and naming conventions of files in a BIDS data
     ```sh
     cd bids_validator
     ```
-3. Install required dependencies (if any):
-    ```sh
-    pip install -r requirements.txt
-    ```
-
+    
 ## Usage
 
 Run the validator on a BIDS dataset:
 
 ```sh
-python bids_validator.py /path/to/bids/dataset
+python bids_validator.py "/path/to/bids/dataset"
