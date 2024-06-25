@@ -11,7 +11,7 @@ This tool checks the organization and naming conventions of files in a BIDS data
 - Validate root directory files.
 - Validate subject and session directories.
 - Regular expression-based filename validation.
-- Schema-based validation (optional).
+- Schema-based validation for json files content.
 
 ## Installation
 
