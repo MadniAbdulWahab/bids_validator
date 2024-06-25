@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "properties": {
+    "onset": {
+      "type": "object",
+      "properties": {
+        "LongName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Units": {
+          "type": "string"
+        }
+      },
+      "required": ["LongName", "Description", "Units"]
+    },
+    "duration": {
+      "type": "object",
+      "properties": {
+        "LongName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Units": {
+          "type": "string"
+        }
+      },
+      "required": ["LongName", "Description", "Units"]
+    },
+    "trial_type": {
+      "type": "object",
+      "properties": {
+        "LongName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Levels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["LongName", "Description", "Levels"]
+    },
+    "identifier": {
+      "type": "object",
+      "properties": {
+        "LongName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Levels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["LongName", "Description", "Levels"]
+    }
+  },
+  "required": ["onset", "duration", "trial_type", "identifier"]
+}

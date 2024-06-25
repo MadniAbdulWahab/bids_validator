@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "properties": {
+    "TaskName": {
+      "type": "string"
+    },
+    "TaskDescription": {
+      "type": "string"
+    },
+    "Instructions": {
+      "type": "string"
+    },
+    "CogAtlasID": {
+      "type": "string",
+      "format": "uri"
+    },
+    "CogPOID": {
+      "type": "string",
+      "format": "uri"
+    },
+    "InstitutionName": {
+      "type": "string"
+    },
+    "InstitutionAddress": {
+      "type": "string"
+    },
+    "SOA": {
+      "type": "number"
+    }
+  },
+  "required": ["TaskName"]
+}

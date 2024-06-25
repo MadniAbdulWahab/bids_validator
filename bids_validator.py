@@ -29,16 +29,26 @@ class BIDSValidator:
             "func", "dwi", "fmap", "anat", "perf", "meg", "eeg",
             "ieeg", "beh", "pet", "micr", "nirs", "motion"
         ]
-        self.load_schema()
+        self.schemas = {}
+        self.load_schemas()
 
-    def load_schema(self):
-        try:
-            with open('bids_schema.json') as f:
-                self.schema = json.load(f)
-            logger.info("Schema loaded successfully")
-        except FileNotFoundError:
-            logger.warning("Schema file not found. Proceeding without schema")
-            self.schema = None
+    def load_schemas(self):
+        schema_dir = 'schemas'
+        schema_files = {
+            'dataset_description.json': 'dataset_description_schema.json',
+            'participants.json': 'participants_schema.json',
+            'sub-xx_ses-xx_task-xx_beh.json': 'task_beh_schema.json',
+            'sub-xx_ses-xx_task-xx_events.json': 'task_events_schema.json',
+            'sub-xx_ses-xx_task-xx_recording-xx_physio.json': 'task_physio_schema.json'
+        }
+        for key, schema_file in schema_files.items():
+            schema_path = os.path.join(schema_dir, schema_file)
+            try:
+                with open(schema_path) as f:
+                    self.schemas[key] = json.load(f)
+                logger.info(f"Schema {schema_file} loaded successfully")
+            except FileNotFoundError:
+                logger.warning(f"Schema file {schema_file} not found. Proceeding without schema for {key}")
 
     def validate_file_structure(self):
         logger.info("Starting validation")
@@ -104,20 +114,50 @@ class BIDSValidator:
                             self.unexpected_files.append(f"File '{file}' in '{session_subdir_path}' does not start with 'sub-{sub_label}[_ses-{ses_label}]'")
 
     def validate_json_files(self):
-        if not self.schema:
+        if not self.schemas:
             return
-        for json_file in ['dataset_description.json']:
+        
+        # Function to get the schema key based on the filename pattern
+        def get_schema_key(filename):
+            if re.match(r'sub-\d+_ses-\d+_task-.*_beh\.json', filename):
+                return 'sub-xx_ses-xx_task-xx_beh.json'
+            elif re.match(r'sub-\d+_ses-\d+_task-.*_events\.json', filename):
+                return 'sub-xx_ses-xx_task-xx_events.json'
+            elif re.match(r'sub-\d+_ses-\d+_task-.*_recording-.*_physio\.json', filename):
+                return 'sub-xx_ses-xx_task-xx_recording-xx_physio.json'
+            else:
+                return None
+
+        # Validate root-level JSON files
+        for json_file in ['dataset_description.json', 'participants.json']:
             json_path = os.path.join(self.root_path, json_file)
             if os.path.exists(json_path):
                 with open(json_path, 'r') as f:
                     try:
                         data = json.load(f)
-                        validate(instance=data, schema=self.schema[json_file])
+                        validate(instance=data, schema=self.schemas[json_file])
                         logger.info(f"{json_file} is valid according to the schema")
                     except ValidationError as e:
                         self.invalid_json_files.append(f"{json_file}: {str(e)}")
                     except json.JSONDecodeError:
                         self.invalid_json_files.append(f"{json_file}: invalid JSON")
+        
+        # Validate JSON files in subdirectories
+        for subdir, dirs, files in os.walk(self.root_path):
+            for file in files:
+                if file.endswith(".json"):
+                    json_path = os.path.join(subdir, file)
+                    schema_key = get_schema_key(file)
+                    if schema_key and schema_key in self.schemas:
+                        with open(json_path, 'r') as f:
+                            try:
+                                data = json.load(f)
+                                validate(instance=data, schema=self.schemas[schema_key])
+                                logger.info(f"{file} is valid according to the schema")
+                            except ValidationError as e:
+                                self.invalid_json_files.append(f"{file}: {str(e)}")
+                            except json.JSONDecodeError:
+                                self.invalid_json_files.append(f"{file}: invalid JSON")
 
     def report_results(self):
         if self.missing_files or self.unexpected_files or self.invalid_json_files:

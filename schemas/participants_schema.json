@@ -1,0 +1,79 @@
+{
+  "type": "object",
+  "required": ["participant_id"],
+  "properties": {
+    "participant_id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "A participant identifier of the form sub-<label>, matching a participant entity found in the dataset. There MUST be exactly one row for each participant. Values in participant_id MUST be unique."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "Description": {
+              "type": "string",
+              "description": "The identification of the participant."
+            }
+          },
+          "required": ["Description"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "species": {
+      "type": "string",
+      "description": "The species column SHOULD be a binomial species name from the NCBI Taxonomy (for example, homo sapiens, mus musculus, rattus norvegicus). For backwards compatibility, if species is absent, the participant is assumed to be homo sapiens."
+    },
+    "age": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Numeric value in years (float or integer value). It is RECOMMENDED to tag participant ages that are 89 or higher as 89.9, for privacy purposes."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "Description": {
+              "type": "string",
+              "description": "The age of the participant defined as an integer."
+            },
+            "Units": {
+              "type": "string",
+              "description": "years"
+            }
+          },
+          "required": ["Description", "Units"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "sex": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "String value indicating phenotypical sex, one of: 'male', 'female', 'other'. For 'male', use one of these values: male, m, M, MALE, Male. For 'female', use one of these values: female, f, F, FEMALE, Female. For 'other', use one of these values: other, o, O, OTHER, Other."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "Description": {
+              "type": "string",
+              "description": "Description of the sex field"
+            },
+            "Levels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Levels of the sex field"
+            }
+          },
+          "required": ["Description", "Levels"],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": true
+}

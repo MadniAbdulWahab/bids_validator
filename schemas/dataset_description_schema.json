@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "required": ["Name", "BIDSVersion"],
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "Name of the dataset"
+    },
+    "BIDSVersion": {
+      "type": "string",
+      "description": "The version of the BIDS standard that was used"
+    },
+    "HEDVersion": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
+      "description": "If HED tags are used: The version of the HED schema used to validate HED tags for study. May include a single schema or a base schema and one or more library schema."
+    },
+    "DatasetLinks": {
+      "type": "object",
+      "description": "Used to map a given <dataset-name> from a BIDS URI of the form bids:<dataset-name>:path/within/dataset to a local or remote location.",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "patternProperties": {
+        "^$": {
+          "not": {}
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

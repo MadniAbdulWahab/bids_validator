@@ -1,0 +1,153 @@
+{
+  "type": "object",
+  "properties": {
+    "Columns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "EnvironmentCoordinates": {
+      "type": "string"
+    },
+    "Manufacturer": {
+      "type": "string"
+    },
+    "ManufacturersModelName": {
+      "type": "string"
+    },
+    "RecordedEye": {
+      "type": "string"
+    },
+    "SampleCoordinateSystem": {
+      "type": "string"
+    },
+    "SampleCoordinateUnits": {
+      "type": "string"
+    },
+    "SamplingFrequency": {
+      "type": "number"
+    },
+    "SoftwareVersion": {
+      "type": "string"
+    },
+    "ScreenAOIDefinition": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "StimulusPresentation": {
+      "type": "object",
+      "properties": {
+        "ScreenDistance": {
+          "type": "number"
+        },
+        "ScreenRefreshRate": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "ScreenResolution": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "ScreenSize": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "pupil_size": {
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "Units": {
+          "type": "string"
+        }
+      },
+      "required": ["Description", "Units"]
+    },
+    "MaximalCalibrationError": {
+      "type": ["number", "null"]
+    },
+    "AverageCalibrationError": {
+      "type": ["number", "null"]
+    },
+    "EyetrackingGeometry": {
+      "type": "object",
+      "properties": {
+        "distances": {
+          "type": "object",
+          "properties": {
+            "EyeToCameraX": {
+              "type": "number"
+            },
+            "EyeToCameraY": {
+              "type": "number"
+            },
+            "EyeToCameraZ": {
+              "type": "number"
+            },
+            "EyeToScreenTopLeftX": {
+              "type": "number"
+            },
+            "EyeToScreenTopLeftY": {
+              "type": "number"
+            },
+            "EyeToScreenTopLeftZ": {
+              "type": "number"
+            }
+          }
+        },
+        "distanceUnits": {
+          "type": "string"
+        }
+      }
+    },
+    "BestEye": {
+      "type": "string"
+    },
+    "ElclProc": {
+      "type": "string"
+    },
+    "RecordingDuration": {
+      "type": "number"
+    },
+    "GazeRange": {
+      "type": "object",
+      "properties": {
+        "xmin": {
+          "type": "number"
+        },
+        "ymin": {
+          "type": "number"
+        },
+        "xmax": {
+          "type": "number"
+        },
+        "ymax": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "required": ["Columns", "EnvironmentCoordinates", "Manufacturer", "ManufacturersModelName", "RecordedEye", "SampleCoordinateSystem", "SampleCoordinateUnits", "SamplingFrequency", "SoftwareVersion", "ScreenAOIDefinition", "StimulusPresentation", "pupil_size"]
+}
